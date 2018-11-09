@@ -1,0 +1,76 @@
+library("ggplot2") # Graphical plot........
+library("seasonal")# FOR calculating seasonallty.....
+library("forecast") # forecasting...........
+library("season") # FOR calculating seasonallty.....
+library("TTR") # for smothing the time series data ...
+
+
+# data import in R dataset ......#
+getwd()
+file.choose(new = TRUE)
+tsdata<-file.choose()
+tsdata <- read.csv("/home/rudra/Desktop/Faruk/tsdata1.csv")
+View(tsdata)
+head(tsdata)
+class(tsdata)
+str(tsdata)
+  
+#----- Data imported -----------#
+
+# plotting the time series data 
+
+tsdata<-ts(tsdata, frequency=12, start=c(2012,1))
+tsdata
+plot.ts(tsdata)
+
+# for decomposition of data---------------------------
+
+tsdatatimeseriescomponents <- decompose(tsdata)
+
+# Get the estimated value of seasonal component--------------
+
+Estimated_seasonal_component<-tsdatatimeseriescomponents$seasonal
+Estimated_seasonal_component
+plot(tsdatatimeseriescomponents)
+
+#-----------decomposition is done --------------------
+
+#------- seasoanlity Seasonally Adjusting------------
+
+tsdatatimeseriescomponents <- decompose(tsdata)
+tsdatatimeseries_seasonally_adjusted<-tsdata-tsdatatimeseriescomponents$seasonal
+tsdatatimeseries_seasonally_adjusted
+plot(tsdatatimeseries_seasonally_adjusted)
+
+#-------time series adjusted data---------------
+
+# Analysis of seasonal pattern ----from tsdatatimeseries_seasonally_adjusted  
+
+
+#If you have a time series that can be described using an additive model
+#with increasing or decreasing trend and
+#seasonality, you can use Holt-Winters exponential smoothing to make short-term forecasts.
+tsdatatimeseries_seasonally_adjusted
+Log_tsdatatimeseries_seasonally_adjusted<-log(tsdatatimeseries_seasonally_adjusted)
+Time_series_forcasts<-HoltWinters(Log_tsdatatimeseries_seasonally_adjusted)
+Time_series_forcasts
+plot(Time_series_forcasts)
+
+#-forecasts for future times not included in the original time series
+# S3 method for HoltWinters
+
+Time_series_forcasts<-HoltWinters(tsdatatimeseries_seasonally_adjusted)
+f<-forecast(Time_series_forcasts, h=36)
+forecast_accident<-forecast(f)
+plot(forecast(forecast_accident))
+
+#Holt-Winters exponential method forecast--2018 to 2020
+
+
+
+
+
+
+
+
+
